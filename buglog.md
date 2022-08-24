@@ -2,7 +2,7 @@
 
 ##### 2022.08.24
 
-###### bigserver Vivado environment issue: *Unable to locate the VitisNetP4 IP*
+###### bigserver Vivado environment issue: <u>Unable to locate the VitisNetP4 IP</u>
 
 - Description
 
