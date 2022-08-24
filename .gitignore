@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# for P4
+*.json
+
 # Object files
 *.o
 *.ko
