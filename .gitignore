@@ -3,6 +3,7 @@
 
 # for P4
 *.json
+*.DS_Store
 
 # Object files
 *.o
