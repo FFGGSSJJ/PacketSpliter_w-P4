@@ -153,7 +153,7 @@ error {
 // *************************** P A R S E R  ************************************* //
 // ****************************************************************************** //
 
-parser MyParser(packet_in packet, 
+parser PacketParser(packet_in packet, 
                 out headers hdr, 
                 inout metadata meta, 
                 inout standard_metadata_t smeta) {
@@ -220,10 +220,24 @@ parser MyParser(packet_in packet,
 // **************************  P R O C E S S I N G   **************************** //
 // ****************************************************************************** //
 
-control MyProcessing(inout headers hdr, 
+control PacketProcessing(inout headers hdr, 
                      inout metadata meta, 
                      inout standard_metadata_t smeta) {
-                      
+    
+    /* Two methods can be utilized for the range check */
+    /* I use table to check the range. */
+
+    /* IPv4dstCheck action used to check the dst addr of packet */
+    action IPv4dstCheck(IPv4Addr min_addr, IPv4Addr max_addr) {
+        marker = (hdr.ipv4.dst >= min_addr && hdr.ipv4.dst <= max_addr) ? 1 : 0;
+    }
+
+    /* IPv6dstCheck action used to check the dst addr of packet */
+    action IPv6dstCheck(IPv6Addr min_addr, IPv6Addr max_addr) {
+        marker = (hdr.ipv4.dst >= min_addr && hdr.ipv4.dst <= max_addr) ? 1 : 0;
+    }
+
+    /**/
     action forwardPacket(bit<9> port) {
         meta.port = port;
     }
@@ -232,8 +246,8 @@ control MyProcessing(inout headers hdr,
         smeta.drop = 1;
     }
 
-    table forwardIPv4 {
-        key             = { hdr.ipv4.dst : lpm; }
+    table checkIPv4 {
+        key             = { hdr.ipv4.dst : range; }
         actions         = { forwardPacket; 
                             dropPacket; }
         size            = 1024;
@@ -241,8 +255,8 @@ control MyProcessing(inout headers hdr,
         default_action  = dropPacket;
     }
 
-    table forwardIPv6 {
-        key             = { hdr.ipv6.dst : lpm; }
+    table checkIPv6 {
+        key             = { hdr.ipv6.dst : range; }
         actions         = { forwardPacket; 
                             dropPacket; }
         size            = 1024;
@@ -257,9 +271,9 @@ control MyProcessing(inout headers hdr,
         }
         
         if (hdr.ipv4.isValid())
-            forwardIPv4.apply();
+            checkIPv4.apply();
         else if (hdr.ipv6.isValid())
-            forwardIPv6.apply();
+            checkIPv6.apply();
         else
             dropPacket();
         
@@ -270,7 +284,7 @@ control MyProcessing(inout headers hdr,
 // ***************************  D E P A R S E R  ******************************** //
 // ****************************************************************************** //
 
-control MyDeparser(packet_out packet, 
+control PacketDeparser(packet_out packet, 
                    in headers hdr,
                    inout metadata meta, 
                    inout standard_metadata_t smeta) {
@@ -291,7 +305,7 @@ control MyDeparser(packet_out packet,
 // ****************************************************************************** //
 
 XilinxPipeline(
-    MyParser(), 
-    MyProcessing(), 
-    MyDeparser()
+    PacketParser(), 
+    PacketProcessing(), 
+    PacketDeparser()
 ) main;
