@@ -227,16 +227,6 @@ control PacketProcessing(inout headers hdr,
     /* Two methods can be utilized for the range check */
     /* I use table to check the range. */
 
-    /* IPv4dstCheck action used to check the dst addr of packet */
-    // action IPv4dstCheck(IPv4Addr min_addr, IPv4Addr max_addr) {
-    //     (hdr.ipv4.dst >= min_addr && hdr.ipv4.dst <= max_addr) ? 1 : 0;
-    // }
-
-    /* IPv6dstCheck action used to check the dst addr of packet */
-    // action IPv6dstCheck(IPv6Addr min_addr, IPv6Addr max_addr) {
-    //     (hdr.ipv4.dst >= min_addr && hdr.ipv4.dst <= max_addr) ? 1 : 0;
-    // }
-
     /**/
     action forwardPacket(bit<9> port) {
         meta.port = port;
