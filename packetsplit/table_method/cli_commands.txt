@@ -1,17 +1,17 @@
 # Table checkIPv4, Entry 0
 # key:[ ipv4.dst in [192.168.0.1,192.168.1.1] ] 
 # response:[ port=6c action=forwardPacket ]
-table_add checkIPv4 forwardPacket 0xc0a80001->0xc0a80301 => 0x6c 0
+table_add checkIPv4 forwardPacket 0xc0a80001 => 0x6c 0
 
 # Table checkIPv4, Entry 1
 # key:[ ipv4.dst=a00965f5 ]
 # response:[ port=2e action=forwardPacket ]
-table_add checkIPv4 forwardPacket 0xc0a80401->0xc0a80701 => 0x2e 0
+table_add checkIPv4 forwardPacket 0xc0a80101 => 0x2e 0
 
 # Table checkIPv4, Entry 2
 # key:[ ipv4.dst=5f5c7d3a ]
 # response:[ port=73 action=forwardPacket ]
-# table_add checkIPv4 forwardPacket 0x5f5c7d3a/32 => 0x73 0
+# table_add checkIPv4 forwardPacket 0xc0a80201 => 0x73 0
 
 # Table checkIPv6, Entry 1
 # key:[ ipv6.dst=9f2f01913d8b6437864e0b6791a8ba64 ]

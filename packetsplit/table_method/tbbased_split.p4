@@ -237,7 +237,7 @@ control PacketProcessing(inout headers hdr,
     }
 
     table checkIPv4 {
-        key             = { hdr.ipv4.dst : range; }
+        key             = { hdr.ipv4.dst : exact; }
         actions         = { forwardPacket; 
                             dropPacket; }
         size            = 1024;
@@ -246,7 +246,7 @@ control PacketProcessing(inout headers hdr,
     }
 
     table checkIPv6 {
-        key             = { hdr.ipv6.dst : range; }
+        key             = { hdr.ipv6.dst : exact; }
         actions         = { forwardPacket; 
                             dropPacket; }
         size            = 1024;
