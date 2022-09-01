@@ -11,7 +11,7 @@ table_add checkIPv4 forwardPacket 0xc0a80101 => 0x2e 0
 # Table checkIPv4, Entry 2
 # key:[ ipv4.dst=5f5c7d3a ]
 # response:[ port=73 action=forwardPacket ]
-# table_add checkIPv4 forwardPacket 0xc0a80201 => 0x73 0
+table_add checkIPv4 forwardPacket 0xc0a80201 => 0x73 0
 
 # Table checkIPv6, Entry 1
 # key:[ ipv6.dst=9f2f01913d8b6437864e0b6791a8ba64 ]

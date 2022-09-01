@@ -51,6 +51,10 @@ const bit<16> IPV6_TYPE  = 0x86DD;
 const bit<8> TCP_PROT  = 0x06;
 const bit<8> UDP_PROT  = 0x11;
 
+const IPv4Addr ipv4_mask = 0xc0a80001;
+const bit<9> HostPort = 73;
+const bit<9> NICPort = 88;
+
 // ****************************************************************************** //
 // *************************** H E A D E R S  *********************************** //
 // ****************************************************************************** //
@@ -225,17 +229,7 @@ control PacketProcessing(inout headers hdr,
                      inout standard_metadata_t smeta) {
     
     /* Two methods can be utilized for the range check */
-    /* I use table to check the range. */
-
-    /* IPv4dstCheck action used to check the dst addr of packet */
-    action IPv4dstCheck(IPv4Addr min_addr, IPv4Addr max_addr) {
-        marker = (hdr.ipv4.dst >= min_addr && hdr.ipv4.dst <= max_addr) ? 1 : 0;
-    }
-
-    /* IPv6dstCheck action used to check the dst addr of packet */
-    action IPv6dstCheck(IPv6Addr min_addr, IPv6Addr max_addr) {
-        marker = (hdr.ipv4.dst >= min_addr && hdr.ipv4.dst <= max_addr) ? 1 : 0;
-    }
+    /* I use action methods check the range. */
 
     /**/
     action forwardPacket(bit<9> port) {
@@ -246,37 +240,34 @@ control PacketProcessing(inout headers hdr,
         smeta.drop = 1;
     }
 
-    table checkIPv4 {
-        key             = { hdr.ipv4.dst : range; }
-        actions         = { forwardPacket; 
-                            dropPacket; }
-        size            = 1024;
-		num_masks       = 64;
-        default_action  = dropPacket;
+    /* IPv4 dst Check action used to check the dst addr of packet */
+    action IPv4dstCheck() {
+        bit<32> temp = hdr.ipv4.dst ^ ipv4_mask;
+        if ((temp >= 0x00000000) && (temp <= 0x00000300)) 
+            forwardPacket(HostPort);
+        else if ((temp >= 0x00000400) && (temp <= 0x00000700))
+            forwardPacket(NICPort);
+        else 
+            dropPacket(); 
     }
 
-    table checkIPv6 {
-        key             = { hdr.ipv6.dst : range; }
-        actions         = { forwardPacket; 
-                            dropPacket; }
-        size            = 1024;
-        default_action  = dropPacket;
-    }
+    /* IPv6dstCheck action used to check the dst addr of packet */
+    // action IPv6dstCheck(IPv6Addr min_addr, IPv6Addr max_addr) {
+    //     marker = ((hdr.ipv6.dst >= min_addr) && (hdr.ipv6.dst <= max_addr)) ? 1 : 0;
+    // }
 
     apply {
-        
         if (smeta.parser_error != error.NoError) {
             dropPacket();
             return;
         }
         
-        if (hdr.ipv4.isValid())
-            checkIPv4.apply();
-        else if (hdr.ipv6.isValid())
-            checkIPv6.apply();
-        else
+        if (hdr.ipv4.isValid()) {
+            IPv4dstCheck();
+        } else if (hdr.ipv6.isValid()) {
             dropPacket();
-        
+        } else
+            dropPacket();
     }
 } 
 
