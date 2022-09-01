@@ -240,17 +240,6 @@ control PacketProcessing(inout headers hdr,
         smeta.drop = 1;
     }
 
-    /* IPv4 dst Check action used to check the dst addr of packet */
-    action IPv4dstCheck() {
-        bit<32> temp = hdr.ipv4.dst ^ ipv4_mask;
-        if ((temp >= 0x00000000)) 
-            meta.port = HostPort;
-        else if ((temp >= 0x00000400))
-            meta.port = NICPort;
-        else 
-            smeta.drop = 1;
-    }
-
     /* IPv6dstCheck action used to check the dst addr of packet */
     // action IPv6dstCheck(IPv6Addr min_addr, IPv6Addr max_addr) {
     //     marker = ((hdr.ipv6.dst >= min_addr) && (hdr.ipv6.dst <= max_addr)) ? 1 : 0;
@@ -263,7 +252,13 @@ control PacketProcessing(inout headers hdr,
         }
         
         if (hdr.ipv4.isValid()) {
-            IPv4dstCheck();
+            bit<32> temp = hdr.ipv4.dst ^ ipv4_mask;
+            if ((temp >= 0x00000000) && (temp <= 0x00000300))
+                forwardPacket(HostPort);
+            else if ((temp >= 0x00000400) && (temp <= 0x00000700))
+                forwardPacket(NICPort);
+            else 
+                dropPacket();
         } else if (hdr.ipv6.isValid()) {
             dropPacket();
         } else
