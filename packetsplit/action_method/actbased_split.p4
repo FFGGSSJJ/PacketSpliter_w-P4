@@ -243,12 +243,12 @@ control PacketProcessing(inout headers hdr,
     /* IPv4 dst Check action used to check the dst addr of packet */
     action IPv4dstCheck() {
         bit<32> temp = hdr.ipv4.dst ^ ipv4_mask;
-        if ((temp >= 0x00000000) and (temp <= 0x00000300)) 
-            forwardPacket(HostPort);
-        else if ((temp >= 0x00000400) and (temp <= 0x00000700))
-            forwardPacket(NICPort);
+        if ((temp >= 0x00000000) && (temp <= 0x00000300)) 
+            meta.port = HostPort;
+        else if ((temp >= 0x00000400) && (temp <= 0x00000700))
+            meta.port = NICPort;
         else 
-            dropPacket(); 
+            smeta.drop = 1;
     }
 
     /* IPv6dstCheck action used to check the dst addr of packet */
