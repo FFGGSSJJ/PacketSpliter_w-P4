@@ -243,9 +243,9 @@ control PacketProcessing(inout headers hdr,
     /* IPv4 dst Check action used to check the dst addr of packet */
     action IPv4dstCheck() {
         bit<32> temp = hdr.ipv4.dst ^ ipv4_mask;
-        if ((temp >= 0x00000000) && (temp <= 0x00000300)) 
+        if ((temp >= 0x00000000)) 
             meta.port = HostPort;
-        else if ((temp >= 0x00000400) && (temp <= 0x00000700))
+        else if ((temp >= 0x00000400))
             meta.port = NICPort;
         else 
             smeta.drop = 1;
