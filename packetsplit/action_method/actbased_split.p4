@@ -231,7 +231,6 @@ control PacketProcessing(inout headers hdr,
     /* Two methods can be utilized for the range check */
     /* I use action methods check the range. */
 
-    /**/
     action forwardPacket(bit<9> port) {
         meta.port = port;
     }
@@ -240,11 +239,6 @@ control PacketProcessing(inout headers hdr,
         smeta.drop = 1;
     }
 
-    /* IPv6dstCheck action used to check the dst addr of packet */
-    // action IPv6dstCheck(IPv6Addr min_addr, IPv6Addr max_addr) {
-    //     marker = ((hdr.ipv6.dst >= min_addr) && (hdr.ipv6.dst <= max_addr)) ? 1 : 0;
-    // }
-
     apply {
         if (smeta.parser_error != error.NoError) {
             dropPacket();
@@ -252,10 +246,10 @@ control PacketProcessing(inout headers hdr,
         }
         
         if (hdr.ipv4.isValid()) {
-            bit<32> temp = hdr.ipv4.dst ^ ipv4_mask;
-            if ((temp >= 0x00000000) && (temp <= 0x00000300))
+            bit<32> temp = (hdr.ipv4.dst ^ ipv4_mask) >> 8;
+            if ((temp >= 0x00000000) && (temp <= 0x00000003))
                 forwardPacket(HostPort);
-            else if ((temp >= 0x00000400) && (temp <= 0x00000700))
+            else if ((temp >= 0x00000004) && (temp <= 0x00000007))
                 forwardPacket(NICPort);
             else 
                 dropPacket();
