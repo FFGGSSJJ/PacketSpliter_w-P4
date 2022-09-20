@@ -51,7 +51,7 @@ const bit<16> IPV6_TYPE  = 0x86DD;
 const bit<8> TCP_PROT  = 0x06;
 const bit<8> UDP_PROT  = 0x11;
 
-const IPv4Addr ipv4_mask = 0xc0a80001;
+const IPv4Addr ipv4_mask = 0xc0a80001;  // 192.168
 const bit<9> HostPort = 73;
 const bit<9> NICPort = 88;
 
