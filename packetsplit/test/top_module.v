@@ -47,40 +47,60 @@ module TopP4 #(
     output  wire                                  m_axis_if_tx_tlast,
     input   wire                                  m_axis_if_tx_tready
 );
+    reg                                  clk_reg;
+    reg [USER_META_DATA_WIDTH-1:0]       user_metadata_in_reg;
+    reg                                  user_metadata_in_valid_reg;
+    reg [USER_META_DATA_WIDTH-1:0]       user_metadata_out_reg;
+    reg                                  user_metadata_out_valid_reg;
+
+    reg [TDATA_NUM_BYTES*8 - 1:0]        s_axis_if_tx_tdata_reg; 
+    reg [TDATA_NUM_BYTES - 1:0]          s_axis_if_tx_tkeep_reg;
+    reg                                  s_axis_if_tx_tvalid_reg;
+    reg                                  s_axis_if_tx_tlast_reg;
+    reg                                  s_axis_if_tx_tready_reg;
+
+    reg [TDATA_NUM_BYTES*8 - 1:0]        m_axis_if_tx_tdata_reg;
+    reg [TDATA_NUM_BYTES - 1:0]          m_axis_if_tx_tkeep_reg;
+    reg                                  m_axis_if_tx_tvalid_reg;
+    reg                                  m_axis_if_tx_tlast_reg;
+    reg                                  m_axis_if_tx_tready_reg;    
+    
     // simulation
     initial begin
-        $monitor("Time = %0t clk = %0d user_meta_out = %0d", $time, clk, user_metadata_out);
-        always #5 clk = ~clk;
-        clk = 0;
-        #5  user_metadata_in = 9'b0;
-            user_metadata_in_valid = 1'b1;
-            s_axis_if_tx_tdata = 512'h79f29860f32125f2052c4ae1080046270045fd3b6acf41010ffdbe741803c0a80301e37452ad;
-            s_axis_if_tx_tkeep = 0;
-            s_axis_if_tx_tvalid = 1;
-            s_axis_if_tx_tlast = 1;
+        $monitor("Time = %0t clk = %0d user_meta_out = %0d", $time, clk_reg, user_metadata_out_reg);
+        clk_reg = 0;
+        #5  clk_reg <= 1;
+            user_metadata_in_reg <= 9'b0;
+            user_metadata_in_valid_reg <= 1'b1;
+            s_axis_if_tx_tdata_reg <= 512'h79f29860f32125f2052c4ae1080046270045fd3b6acf41010ffdbe741803c0a80301e37452ad;
+            s_axis_if_tx_tkeep_reg <= 0;
+            s_axis_if_tx_tvalid_reg <= 1;
+            s_axis_if_tx_tlast_reg <= 1;
     end
     
-    vitis_net_p4_0 #(*)
+    vitis_net_p4_0
     p4_pkt_split_inst (
-        .s_axis_aclk(clk),
+        .s_axis_aclk(clk_reg),
         .s_axis_aresetn(rst),
-        .user_metadata_in(user_metadata_in),
-        .user_metadata_in_valid(user_metadata_in_valid),
-        .user_metadata_out(user_metadata_out),
-        .user_metadata_out_valid(user_metadata_out_valid),
+        .user_metadata_in(user_metadata_in_reg),
+        .user_metadata_in_valid(user_metadata_in_valid_reg),
+        .user_metadata_out(user_metadata_out_reg),
+        .user_metadata_out_valid(user_metadata_out_valid_reg),
 
-        .s_axis_tdata(s_axis_if_tx_tdata),
-        .s_axis_tkeep(s_axis_if_tx_tkeep),
-        .s_axis_tvalid(s_axis_if_tx_tvalid),
-        .s_axis_tlast(s_axis_if_tx_tlast),
-        .s_axis_tready(s_axis_if_tx_tready),
+        .s_axis_tdata(s_axis_if_tx_tdata_reg),
+        .s_axis_tkeep(s_axis_if_tx_tkeep_reg),
+        .s_axis_tvalid(s_axis_if_tx_tvalid_reg),
+        .s_axis_tlast(s_axis_if_tx_tlast_reg),
+        .s_axis_tready(s_axis_if_tx_tready_reg),
 
-        .m_axis_tdata(m_axis_if_tx_tdata),
-        .m_axis_tkeep(m_axis_if_tx_tkeep),
-        .m_axis_tvalid(m_axis_if_tx_tvalid),
-        .m_axis_tlast(m_axis_if_tx_tlast),
-        .m_axis_tready(m_axis_if_tx_tready)
+        .m_axis_tdata(m_axis_if_tx_tdata_reg),
+        .m_axis_tkeep(m_axis_if_tx_tkeep_reg),
+        .m_axis_tvalid(m_axis_if_tx_tvalid_reg),
+        .m_axis_tlast(m_axis_if_tx_tlast_reg),
+        .m_axis_tready(m_axis_if_tx_tready_reg)
     );
+ 
+
 
 
 endmodule
