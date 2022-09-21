@@ -47,6 +47,7 @@ module TopP4 #(
     output  wire                                  m_axis_if_tx_tlast,
     input   wire                                  m_axis_if_tx_tready
 );
+    // Input registers
     reg                                  clk_reg;
     reg [USER_META_DATA_WIDTH-1:0]       user_metadata_in_reg;
     reg                                  user_metadata_in_valid_reg;
@@ -57,22 +58,8 @@ module TopP4 #(
     reg                                  s_axis_if_tx_tlast_reg;
 
     reg                                  m_axis_if_tx_tready_reg;    
-    
-    // simulation
-    initial begin
-        $monitor("Time = %0t clk = %0d user_meta_out = %0d", $time, clk_reg, user_metadata_out);
-        clk_reg = 0;
-        #5  clk_reg <= 1;
-            user_metadata_in_reg <= 9'b0;
-            user_metadata_in_valid_reg <= 1'b1;
-            s_axis_if_tx_tdata_reg <= 512'h79f29860f32125f2052c4ae1080046270045fd3b6acf41010ffdbe741803c0a80301e37452ad;
-            s_axis_if_tx_tkeep_reg <= 0;
-            s_axis_if_tx_tvalid_reg <= 1;
-            s_axis_if_tx_tlast_reg <= 1;
-            m_axis_if_tx_tready_reg <= 0;
-        #5  m_axis_if_tx_tready_reg <= 1;
-    end
-    
+
+    // instantiate p4 ip module
     vitis_net_p4_0
     p4_pkt_split_inst (
         .s_axis_aclk(clk_reg),
@@ -94,6 +81,49 @@ module TopP4 #(
         .m_axis_tlast(m_axis_if_tx_tlast),
         .m_axis_tready(m_axis_if_tx_tready_reg)
     );
+    
+    // simulation, executes only once
+    initial begin
+        $monitor("Time = %0t clk = %0d user_meta_out = %0d", $time, clk_reg, user_metadata_out);
+        clk_reg <= 0;
+        #50
+        clk_reg <= 1;
+        user_metadata_in_reg <= 9'b0;
+        user_metadata_in_valid_reg <= 1'b1;
+        s_axis_if_tx_tdata_reg <= 512'h79f29860f32125f2052c4ae1080046270045fd3b6acf41010ffdbe741803c0a80301e37452ad;
+        s_axis_if_tx_tkeep_reg <= 0;
+        s_axis_if_tx_tvalid_reg <= 1;
+        s_axis_if_tx_tlast_reg <= 1;
+        m_axis_if_tx_tready_reg <= 0;
+        #50  
+        clk_reg <= 0;
+        user_metadata_in_reg <= 9'b0;
+        user_metadata_in_valid_reg <= 1'b0;
+        s_axis_if_tx_tdata_reg <= 0;
+        s_axis_if_tx_tkeep_reg <= 0;
+        s_axis_if_tx_tvalid_reg <= 0;
+        s_axis_if_tx_tlast_reg <= 0;
+        m_axis_if_tx_tready_reg <= 1;
+        #50
+        clk_reg <= 1;
+        user_metadata_in_reg <= 9'b0;
+        user_metadata_in_valid_reg <= 1'b1;
+        s_axis_if_tx_tdata_reg <= 512'h79f29860f32125f2052c4ae1080046270045fd3b6acf41010ffdbe741803c0a80301e37452ad;
+        s_axis_if_tx_tkeep_reg <= 0;
+        s_axis_if_tx_tvalid_reg <= 1;
+        s_axis_if_tx_tlast_reg <= 1;
+        m_axis_if_tx_tready_reg <= 0;
+        #50
+        clk_reg <= 0;
+        user_metadata_in_reg <= 9'b0;
+        user_metadata_in_valid_reg <= 1'b0;
+        s_axis_if_tx_tdata_reg <= 0;
+        s_axis_if_tx_tkeep_reg <= 0;
+        s_axis_if_tx_tvalid_reg <= 0;
+        s_axis_if_tx_tlast_reg <= 0;
+        m_axis_if_tx_tready_reg <= 1;
+
+    end
  
 
 
