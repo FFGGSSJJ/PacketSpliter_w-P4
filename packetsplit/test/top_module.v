@@ -42,13 +42,13 @@ module P4_tb #(
     reg                                  m_axis_if_tx_tready_reg;    
 
     // output wires
-    wire [USER_META_DATA_WIDTH-1:0]      user_metadata_out,
-    wire                                 user_metadata_out_valid,
-    wire                                 s_axis_if_tx_tready,
-    wire [TDATA_NUM_BYTES*8 - 1:0]       m_axis_if_tx_tdata,
-    wire [TDATA_NUM_BYTES - 1:0]         m_axis_if_tx_tkeep,
-    wire                                 m_axis_if_tx_tvalid,
-    wire                                 m_axis_if_tx_tlast,
+    wire [USER_META_DATA_WIDTH-1:0]      user_metadata_out;
+    wire                                 user_metadata_out_valid;
+    wire                                 s_axis_if_tx_tready;
+    wire [TDATA_NUM_BYTES*8 - 1:0]       m_axis_if_tx_tdata;
+    wire [TDATA_NUM_BYTES - 1:0]         m_axis_if_tx_tkeep;
+    wire                                 m_axis_if_tx_tvalid;
+    wire                                 m_axis_if_tx_tlast;
 
     // instantiate p4 ip module
     vitis_net_p4_0
