@@ -508,6 +508,58 @@ ram_inst (
     .s_axil_rready(s_axil_app_ctrl_rready)
 );
 
+// TODO: connect different Ethernet interfaces
+/******* Added P4 IP core module *********
+ *  This module is now connected to the Ethernet internal interface
+ *
+ */
+
+/* parameters used in p4 ip core */
+localparam TDATA_NUM_BYTES = AXIS_IF_DATA_WIDTH/8;
+localparam USER_META_DATA_WIDTH = 9;
+
+/* temp registers and wires */
+reg  [USER_META_DATA_WIDTH-1:0]       user_metadata_in_reg;
+reg                                   user_metadata_in_valid_reg;
+wire [USER_META_DATA_WIDTH-1:0]       user_metadata_out;
+wire                                  user_metadata_out_valid;
+
+/* instantiate ip core */
+vitis_net_p4_0 #(
+    .TDATA_NUM_BYTES(TDATA_NUM_BYTES),
+    .USER_META_DATA_WIDTH(USER_META_DATA_WIDTH)
+)
+p4_pkt_split_inst (
+    .s_axis_aclk(clk),
+    .s_axis_aresetn(rst),
+    .user_metadata_in(user_metadata_in_reg),
+    .user_metadata_in_valid(user_metadata_in_valid_reg),
+    .user_metadata_out(user_metadata_out),
+    .user_metadata_out_valid(user_metadata_out_valid),
+    .s_axis_tdata(s_axis_if_tx_tdata),
+    .s_axis_tkeep(s_axis_if_tx_tkeep),
+    .s_axis_tvalid(s_axis_if_tx_tvalid),
+    .s_axis_tlast(s_axis_if_tx_tlast),
+    .s_axis_tready(s_axis_if_tx_tready),
+    .m_axis_tdata(m_axis_if_tx_tdata),
+    .m_axis_tkeep(m_axis_if_tx_tkeep),
+    .m_axis_tvalid(m_axis_if_tx_tvalid),
+    .m_axis_tlast(m_axis_if_tx_tlast),
+    .m_axis_tready(m_axis_if_tx_tready)
+); 
+
+/* TODO usermetada condition logic */
+
+
+
+/* TODO DMA interface connection */
+
+
+
+
+
+
+
 /*
  * AXI-Lite master interface (control to NIC)
  */
