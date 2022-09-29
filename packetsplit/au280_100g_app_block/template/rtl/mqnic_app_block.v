@@ -524,6 +524,8 @@ reg                                   user_metadata_in_valid_reg;
 wire [USER_META_DATA_WIDTH-1:0]       user_metadata_out;
 wire                                  user_metadata_out_valid;
 
+user_metadata_in_reg = 0;
+user_metadata_in_valid_reg = 1;
 /* instantiate ip core */
 vitis_net_p4_0 #(
     .TDATA_NUM_BYTES(TDATA_NUM_BYTES),
