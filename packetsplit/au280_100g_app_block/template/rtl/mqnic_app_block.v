@@ -527,28 +527,25 @@ wire                                  user_metadata_out_valid;
 user_metadata_in_reg = 0;
 user_metadata_in_valid_reg = 1;
 /* instantiate ip core */
-vitis_net_p4_0 #(
-    .TDATA_NUM_BYTES(TDATA_NUM_BYTES),
-    .USER_META_DATA_WIDTH(USER_META_DATA_WIDTH)
-)
+pkt_split_design_wrapper
 p4_pkt_split_inst (
-    .s_axis_aclk(clk),
-    .s_axis_aresetn(rst),
-    .user_metadata_in(user_metadata_in_reg),
-    .user_metadata_in_valid(user_metadata_in_valid_reg),
-    .user_metadata_out(user_metadata_out),
-    .user_metadata_out_valid(user_metadata_out_valid),
-    .s_axis_tdata(s_axis_if_tx_tdata),
-    .s_axis_tkeep(s_axis_if_tx_tkeep),
-    .s_axis_tvalid(s_axis_if_tx_tvalid),
-    .s_axis_tlast(s_axis_if_tx_tlast),
-    .s_axis_tready(s_axis_if_tx_tready),
-    .m_axis_tdata(m_axis_if_tx_tdata),
-    .m_axis_tkeep(m_axis_if_tx_tkeep),
-    .m_axis_tvalid(m_axis_if_tx_tvalid),
-    .m_axis_tlast(m_axis_if_tx_tlast),
-    .m_axis_tready(m_axis_if_tx_tready)
-); 
+    .s_axis_aclk_0(clk),
+    .s_axis_aresetn_0(rst),
+    .user_metadata_in_0(user_metadata_in_reg),
+    .user_metadata_in_valid_0(user_metadata_in_valid_reg),
+    .user_metadata_out_0(user_metadata_out),
+    .user_metadata_out_valid_0(user_metadata_out_valid),
+    .s_axis_0_tdata(s_axis_if_tx_tdata),
+    .s_axis_0_tkeep(s_axis_if_tx_tkeep),
+    .s_axis_0_tvalid(s_axis_if_tx_tvalid),
+    .s_axis_0_tlast(s_axis_if_tx_tlast),
+    .s_axis_0_tready(s_axis_if_tx_tready),
+    .m_axis_0_tdata(m_axis_if_tx_tdata),
+    .m_axis_0_tkeep(m_axis_if_tx_tkeep),
+    .m_axis_0_tvalid(m_axis_if_tx_tvalid),
+    .m_axis_0_tlast(m_axis_if_tx_tlast),
+    .m_axis_0_tready(m_axis_if_tx_tready)
+);
 
 /* TODO usermetada condition logic */
 
