@@ -534,6 +534,7 @@ wire [IF_COUNT-1:0]                     m_axis_if_tlast_reg;
 
 assign user_metadata_in_reg = 0;
 assign user_metadata_in_valid_reg = 1;
+
 /* instantiate ip core */
 pkt_split_design_wrapper
 p4_pkt_split_inst (
@@ -560,7 +561,7 @@ p4_pkt_split_inst (
 /* TODO usermetada condition logic */
 // mux
 case ({user_metadata_out,m_axis_if_tvalid_reg}) 
-1'b1: begin
+2'b11: begin
     // output to Host side (DMA)
     assign m_axis_if_rx_tdata = m_axis_if_tdata_reg;
     assign m_axis_if_rx_tkeep = m_axis_if_tkeep_reg;
@@ -572,7 +573,7 @@ case ({user_metadata_out,m_axis_if_tvalid_reg})
     assign m_axis_if_rx_tdest = s_axis_if_rx_tdest;
     assign m_axis_if_rx_tuser = s_axis_if_rx_tuser;
 end
-default: begin
+2'b01: begin
     // output to Port side (MAC)
     assign m_axis_if_tx_tdata = m_axis_if_tdata_reg;
     assign m_axis_if_tx_tkeep = m_axis_if_tkeep_reg;
@@ -584,6 +585,7 @@ default: begin
     assign m_axis_if_tx_tdest = s_axis_if_tx_tdest;
     assign m_axis_if_tx_tuser = s_axis_if_tx_tuser;
 end
+default:
 endcase
 
 
@@ -652,28 +654,28 @@ assign m_axis_sync_rx_tuser = s_axis_sync_rx_tuser;
 /*
  * Ethernet (internal at interface module) - deleted and moved to user_metadata condition part
  */
-assign m_axis_if_tx_tdata = s_axis_if_tx_tdata;
-assign m_axis_if_tx_tkeep = s_axis_if_tx_tkeep;
-assign m_axis_if_tx_tvalid = s_axis_if_tx_tvalid;
-assign s_axis_if_tx_tready = m_axis_if_tx_tready;
-assign m_axis_if_tx_tlast = s_axis_if_tx_tlast;
-assign m_axis_if_tx_tid = s_axis_if_tx_tid;
-assign m_axis_if_tx_tdest = s_axis_if_tx_tdest;
-assign m_axis_if_tx_tuser = s_axis_if_tx_tuser;
+// assign m_axis_if_tx_tdata = s_axis_if_tx_tdata;
+// assign m_axis_if_tx_tkeep = s_axis_if_tx_tkeep;
+// assign m_axis_if_tx_tvalid = s_axis_if_tx_tvalid;
+// assign s_axis_if_tx_tready = m_axis_if_tx_tready;
+// assign m_axis_if_tx_tlast = s_axis_if_tx_tlast;
+// assign m_axis_if_tx_tid = s_axis_if_tx_tid;
+// assign m_axis_if_tx_tdest = s_axis_if_tx_tdest;
+// assign m_axis_if_tx_tuser = s_axis_if_tx_tuser;
 
 assign m_axis_if_tx_cpl_ts = s_axis_if_tx_cpl_ts;
 assign m_axis_if_tx_cpl_tag = s_axis_if_tx_cpl_tag;
 assign m_axis_if_tx_cpl_valid = s_axis_if_tx_cpl_valid;
 assign s_axis_if_tx_cpl_ready = m_axis_if_tx_cpl_ready;
 
-assign m_axis_if_rx_tdata = s_axis_if_rx_tdata;
-assign m_axis_if_rx_tkeep = s_axis_if_rx_tkeep;
-assign m_axis_if_rx_tvalid = s_axis_if_rx_tvalid;
-assign s_axis_if_rx_tready = m_axis_if_rx_tready;
-assign m_axis_if_rx_tlast = s_axis_if_rx_tlast;
-assign m_axis_if_rx_tid = s_axis_if_rx_tid;
-assign m_axis_if_rx_tdest = s_axis_if_rx_tdest;
-assign m_axis_if_rx_tuser = s_axis_if_rx_tuser;
+// assign m_axis_if_rx_tdata = s_axis_if_rx_tdata;
+// assign m_axis_if_rx_tkeep = s_axis_if_rx_tkeep;
+// assign m_axis_if_rx_tvalid = s_axis_if_rx_tvalid;
+// assign s_axis_if_rx_tready = m_axis_if_rx_tready;
+// assign m_axis_if_rx_tlast = s_axis_if_rx_tlast;
+// assign m_axis_if_rx_tid = s_axis_if_rx_tid;
+// assign m_axis_if_rx_tdest = s_axis_if_rx_tdest;
+// assign m_axis_if_rx_tuser = s_axis_if_rx_tuser;
 
 /*
  * DMA interface (control)
