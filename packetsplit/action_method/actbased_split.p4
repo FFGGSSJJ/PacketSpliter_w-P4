@@ -52,8 +52,8 @@ const bit<8> TCP_PROT  = 0x06;
 const bit<8> UDP_PROT  = 0x11;
 
 const IPv4Addr ipv4_mask = 0xc0a80001;  // 192.168
-const bit<9> HostPort = 73;
-const bit<9> NICPort = 88;
+const bit<1> HostPort = 1;
+const bit<1> NICPort = 0;
 
 // ****************************************************************************** //
 // *************************** H E A D E R S  *********************************** //
@@ -231,7 +231,7 @@ control PacketProcessing(inout headers hdr,
     /* Two methods can be utilized for the range check */
     /* I use action methods check the range. */
 
-    action forwardPacket(bit<9> port) {
+    action forwardPacket(bit<1> port) {
         meta.port = port;
     }
     
