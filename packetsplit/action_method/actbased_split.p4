@@ -144,7 +144,7 @@ struct headers {
 
 // User metadata structure
 struct metadata {
-    bit<9> port;
+    bit<1> port;
 }
 
 // User-defined errors 
