@@ -595,7 +595,7 @@ p4_pkt_split_inst (
 
 /* TODO usermetada condition logic */
 // mux
-always @(m_axis_if_tvalid and user_metadata_out_valid) begin
+always @(m_axis_if_tvalid) begin
     user_metadata_out_reg = user_metadata_out;
     case (user_metadata_out_reg)
         1'b1: begin

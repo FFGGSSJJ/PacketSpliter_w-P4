@@ -62,6 +62,10 @@ SYN_FILES += lib/axi/rtl/axil_crossbar.v
 SYN_FILES += lib/axi/rtl/axil_crossbar_addr.v
 SYN_FILES += lib/axi/rtl/axil_crossbar_rd.v
 SYN_FILES += lib/axi/rtl/axil_crossbar_wr.v
+# added module for app block
+# lib/axi/rtl/axil_ram.v
+SYN_FILES += lib/axi/rtl/axil_ram.v
+
 SYN_FILES += lib/axi/rtl/axil_reg_if.v
 SYN_FILES += lib/axi/rtl/axil_reg_if_rd.v
 SYN_FILES += lib/axi/rtl/axil_reg_if_wr.v
