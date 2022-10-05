@@ -518,76 +518,104 @@ ram_inst (
 localparam TDATA_NUM_BYTES = AXIS_IF_DATA_WIDTH/8;
 localparam USER_META_DATA_WIDTH = 1;
 
-/* temp registers for user metedata */
-wire [USER_META_DATA_WIDTH-1:0]         user_metadata_in_reg;
-wire                                    user_metadata_in_valid_reg;
+/* temp wires for user metedata */
+wire [USER_META_DATA_WIDTH-1:0]         user_metadata_in;
+wire                                    user_metadata_in_valid;
 wire [USER_META_DATA_WIDTH-1:0]         user_metadata_out;
-wire                                    user_metadata_out_valid_reg;
+wire                                    user_metadata_out_valid;
+reg                                     user_metadata_out_reg;
 
-/* temp registers for P4 module output */
-wire [IF_COUNT*AXIS_IF_DATA_WIDTH-1:0]  m_axis_if_tdata_reg;    
-wire [IF_COUNT*AXIS_IF_KEEP_WIDTH-1:0]  m_axis_if_tkeep_reg;
-wire [IF_COUNT-1:0]                     m_axis_if_tvalid_reg;
-wire [IF_COUNT-1:0]                     s_axis_if_tready_reg;
-wire [IF_COUNT-1:0]                     m_axis_if_tlast_reg;
+/* temp wires for P4 module output */
+wire [IF_COUNT*AXIS_IF_DATA_WIDTH-1:0]  m_axis_if_tdata;    
+wire [IF_COUNT*AXIS_IF_KEEP_WIDTH-1:0]  m_axis_if_tkeep;
+wire [IF_COUNT-1:0]                     m_axis_if_tvalid;
+wire [IF_COUNT-1:0]                     s_axis_if_tready;
+wire [IF_COUNT-1:0]                     m_axis_if_tlast;
 
+/* registers for Host side (DMA) */
+reg [IF_COUNT*AXIS_IF_DATA_WIDTH-1:0]   m_axis_if_rx_tdata_reg;
+reg [IF_COUNT*AXIS_IF_KEEP_WIDTH-1:0]   m_axis_if_rx_tkeep_reg;
+reg [IF_COUNT-1:0]                      m_axis_if_rx_tvalid_reg;
+reg [IF_COUNT-1:0]                      m_axis_if_rx_tready_reg;
+reg [IF_COUNT-1:0]                      m_axis_if_rx_tlast_reg;
 
-assign user_metadata_in_reg = 0;
-assign user_metadata_in_valid_reg = 1;
+/* registers for NIC side (Port) */
+reg [IF_COUNT*AXIS_IF_DATA_WIDTH-1:0]   m_axis_if_tx_tdata_reg;
+reg [IF_COUNT*AXIS_IF_KEEP_WIDTH-1:0]   m_axis_if_tx_tkeep_reg;
+reg [IF_COUNT-1:0]                      m_axis_if_tx_tvalid_reg;
+reg [IF_COUNT-1:0]                      m_axis_if_tx_tready_reg;
+reg [IF_COUNT-1:0]                      m_axis_if_tx_tlast_reg;
+
+/* assign user metadata input */
+assign user_metadata_in = 0;
+assign user_metadata_in_valid = 1;
+
+/* assign Host side */
+assign m_axis_if_rx_tdata = m_axis_if_rx_tdata_reg; 
+assign m_axis_if_rx_tkeep = m_axis_if_rx_tkeep_reg; 
+assign m_axis_if_rx_tvalid = m_axis_if_rx_tvalid_reg; 
+assign m_axis_if_rx_tready = m_axis_if_rx_tready_reg; 
+assign m_axis_if_rx_tlast = m_axis_if_rx_tlast_reg;  
+assign m_axis_if_rx_tid = s_axis_if_rx_tid;
+assign m_axis_if_rx_tdest = s_axis_if_rx_tdest;
+assign m_axis_if_rx_tuser = s_axis_if_rx_tuser;
+
+/* assign NIC side */
+assign m_axis_if_tx_tdata = m_axis_if_tx_tdata_reg;
+assign m_axis_if_tx_tkeep = m_axis_if_tx_tkeep_reg;
+assign m_axis_if_tx_tvalid = m_axis_if_tx_tvalid_reg;
+assign m_axis_if_tx_tready = m_axis_if_tx_tready_reg;
+assign m_axis_if_tx_tlast = m_axis_if_tx_tlast_reg;
+assign m_axis_if_tx_tid = s_axis_if_tx_tid;
+assign m_axis_if_tx_tdest = s_axis_if_tx_tdest;
+assign m_axis_if_tx_tuser = s_axis_if_tx_tuser;
 
 /* instantiate ip core */
 pkt_split_design_wrapper
 p4_pkt_split_inst (
     .s_axis_aclk_0(clk),
     .s_axis_aresetn_0(rst),
-    .user_metadata_in_0(user_metadata_in_reg),
-    .user_metadata_in_valid_0(user_metadata_in_valid_reg),
+    .user_metadata_in_0(user_metadata_in),
+    .user_metadata_in_valid_0(user_metadata_in_valid),
     .user_metadata_out_0(user_metadata_out),
-    .user_metadata_out_valid_0(user_metadata_out_valid_reg),
+    .user_metadata_out_valid_0(user_metadata_out_valid),
 
     .s_axis_0_tdata(s_axis_if_rx_tdata),
     .s_axis_0_tkeep(s_axis_if_rx_tkeep),
     .s_axis_0_tvalid(s_axis_if_rx_tvalid),
-    .s_axis_0_tready(s_axis_if_tready_reg),
+    .s_axis_0_tready(s_axis_if_tready),
     .s_axis_0_tlast(s_axis_if_rx_tlast),
 
-    .m_axis_0_tdata(m_axis_if_tdata_reg),
-    .m_axis_0_tkeep(m_axis_if_tkeep_reg),
-    .m_axis_0_tvalid(m_axis_if_tvalid_reg),
+    .m_axis_0_tdata(m_axis_if_tdata),
+    .m_axis_0_tkeep(m_axis_if_tkeep),
+    .m_axis_0_tvalid(m_axis_if_tvalid),
     .m_axis_0_tready(m_axis_if_tx_tready | m_axis_if_rx_tready),
-    .m_axis_0_tlast(m_axis_if_tlast_reg)
+    .m_axis_0_tlast(m_axis_if_tlast)
 );
 
 /* TODO usermetada condition logic */
 // mux
-case ({user_metadata_out,m_axis_if_tvalid_reg}) 
-2'b11: begin
-    // output to Host side (DMA)
-    assign m_axis_if_rx_tdata = m_axis_if_tdata_reg;
-    assign m_axis_if_rx_tkeep = m_axis_if_tkeep_reg;
-    assign m_axis_if_rx_tvalid = m_axis_if_tvalid_reg;
-    assign s_axis_if_rx_tready = s_axis_if_tready_reg;
-    assign m_axis_if_rx_tlast = m_axis_if_tlast_reg;
-    // original connection
-    assign m_axis_if_rx_tid = s_axis_if_rx_tid;
-    assign m_axis_if_rx_tdest = s_axis_if_rx_tdest;
-    assign m_axis_if_rx_tuser = s_axis_if_rx_tuser;
+always @(m_axis_if_tvalid and user_metadata_out_valid) begin
+    user_metadata_out_reg = user_metadata_out;
+    case (user_metadata_out_reg)
+        1'b1: begin
+            // output to Host side (DMA)
+            m_axis_if_rx_tdata_reg = m_axis_if_tdata;
+            m_axis_if_rx_tkeep_reg = m_axis_if_tkeep;
+            m_axis_if_rx_tvalid_reg = m_axis_if_tvalid;
+            m_axis_if_rx_tready_reg = s_axis_if_tready;
+            m_axis_if_rx_tlast_reg = m_axis_if_tlast;
+        end
+        default: begin
+            // output to Port side (MAC)
+            m_axis_if_tx_tdata_reg = m_axis_if_tdata;
+            m_axis_if_tx_tkeep_reg = m_axis_if_tkeep;
+            m_axis_if_tx_tvalid_reg = m_axis_if_tvalid;
+            m_axis_if_tx_tready_reg = s_axis_if_tready;
+            m_axis_if_tx_tlast_reg = m_axis_if_tlast;
+        end
+    endcase
 end
-2'b01: begin
-    // output to Port side (MAC)
-    assign m_axis_if_tx_tdata = m_axis_if_tdata_reg;
-    assign m_axis_if_tx_tkeep = m_axis_if_tkeep_reg;
-    assign m_axis_if_tx_tvalid = m_axis_if_tvalid_reg;
-    assign s_axis_if_tx_tready = s_axis_if_tready_reg;
-    assign m_axis_if_tx_tlast = m_axis_if_tlast_reg;
-    // original connection
-    assign m_axis_if_tx_tid = s_axis_if_tx_tid;
-    assign m_axis_if_tx_tdest = s_axis_if_tx_tdest;
-    assign m_axis_if_tx_tuser = s_axis_if_tx_tuser;
-end
-default:
-endcase
-
 
 
 
